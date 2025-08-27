@@ -10,5 +10,9 @@
     "mongoose": "^8.18.0",
     "nodemailer": "^7.0.5",
     "nodemon": "^3.1.10"
-  }
+  },
+  "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js"  
+      }
 }
