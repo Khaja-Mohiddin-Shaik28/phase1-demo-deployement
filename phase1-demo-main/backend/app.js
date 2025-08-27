@@ -2,120 +2,34 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 const cookieParser = require("cookie-parser");
 
-// Router import
+// router import
 const loginRegisterRouter = require("./router/loginRegisterRoute");
 
-// ------------------- CORS Setup -------------------
-const allowedOrigins = [
-    'http://localhost:5173',                             // local dev
-    'https://phase1-demo-deployement-1.onrender.com'     // deployed frontend
-];
 
-app.use(cors({
-    origin: function(origin, callback) {
-        if (!origin) return callback(null, true); // allow Postman / server requests
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true
-}));
-
-// ------------------- Middlewares -------------------
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(cookieParser());
-
-// ------------------- Health Check -------------------
-app.get('/health', (req, res) => {
-    res.status(200).json({ 
-        status: 'OK', 
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
-    });
-});
-
-// ------------------- API Routes -------------------
-app.use("/api", loginRegisterRouter);
-
-// ------------------- Serve React Build -------------------
-if (process.env.NODE_ENV === "production") {
-    const frontendBuildPath = path.join(__dirname, "../frontend/dist");
-    app.use(express.static(frontendBuildPath));
-    
-    // Handle React Router - FIXED: Use * instead of /*
-    app.get("*", (req, res) => {
-        // Don't serve index.html for API routes
-        if (req.path.startsWith('/api')) {
-            return res.status(404).json({ error: 'API route not found' });
-        }
-        res.sendFile(path.join(frontendBuildPath, "index.html"));
-    });
+// CORS Setup
+const corsOptions = {
+    origin: 'https://phase1-demo-deployement-1.onrender.com',
+    credentials : true
 }
 
-// ------------------- Error Handling Middleware -------------------
-app.use((err, req, res, next) => {
-    console.error('Error:', err.message);
-    res.status(500).json({ 
-        error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-    });
-});
 
-// ------------------- 404 Handler -------------------
-app.use((req, res) => {
-    res.status(404).json({ error: 'Route not found' });
-});
+app.use(cors(corsOptions))
 
-// ------------------- Database Connection -------------------
-const dbConnection = async () => {
-    try {
-        const mongoOptions = {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-            socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-            maxPoolSize: 10, // Maintain up to 10 socket connections
-            serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-            heartbeatFrequencyMS: 10000, // Send a ping every 10 seconds
-        };
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser())
 
-        await mongoose.connect(process.env.dbURL || process.env.MONGODB_URI, mongoOptions);
-        console.log("✅ Connected to MongoDB");
-        
-        const PORT = process.env.PORT || 3000;
-        const server = app.listen(PORT, '0.0.0.0', () => {
-            console.log(`🚀 Server running on port ${PORT}`);
-            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-        });
-
-        // Graceful shutdown
-        process.on('SIGTERM', () => {
-            console.log('SIGTERM received, shutting down gracefully');
-            server.close(() => {
-                console.log('Process terminated');
-                mongoose.connection.close();
-            });
-        });
-
-    } catch (err) {
-        console.error("❌ MongoDB connection error:", err);
-        process.exit(1);
-    }
-};
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (err, promise) => {
-    console.error('Unhandled Promise Rejection:', err.message);
-    process.exit(1);
-});
-
+// Database Connection
+dbConnection = async ()=>{
+        await mongoose.connect(process.env.dbURL || "mongodb+srv://Test:1234@cluster0.oyxicni.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
+        app.listen(process.env.PORT || https://phase1-demo-deployement-1.onrender.com
+);
+}
 dbConnection();
 
-module.exports = app;
+app.use("/api",loginRegisterRouter)
+
