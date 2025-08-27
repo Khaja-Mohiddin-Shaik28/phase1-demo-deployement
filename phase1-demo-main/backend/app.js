@@ -11,7 +11,7 @@ const loginRegisterRouter = require("./router/loginRegisterRoute");
 
 // CORS Setup
 const corsOptions = {
-    origin: 'https://phase1-demo-deployement-1.onrender.com',
+    origin: process.env.FRONTEND_URL,
     credentials : true
 }
 
