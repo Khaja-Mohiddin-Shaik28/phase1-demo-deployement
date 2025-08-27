@@ -8,27 +8,45 @@ const cookieParser = require("cookie-parser");
 // router import
 const loginRegisterRouter = require("./router/loginRegisterRoute");
 
-
 // CORS Setup
-const corsOptions = {
-    origin: 'https://phase1-demo-deployement-1.onrender.com',
-    credentials : true
-}
+const allowedOrigins = [
+    'https://phase1-demo-deployement-1.onrender.com',
+    'http://localhost:5173'
+];
 
-
-app.use(cors(corsOptions))
+app.use(cors({
+    origin: function(origin, callback){
+        if(!origin) return callback(null, true); // allow non-browser tools like Postman
+        if(allowedOrigins.includes(origin)){
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
+app.use(cookieParser());
+
+// Routes
+app.use("/api", loginRegisterRouter);
 
 // Database Connection
-dbConnection = async ()=>{
-        await mongoose.connect(process.env.dbURL || "mongodb+srv://Test:1234@cluster0.oyxicni.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
-        app.listen(process.env.PORT || 3000);
+const dbConnection = async () => {
+    try {
+        await mongoose.connect(process.env.dbURL, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
+        console.log("✅ Connected to MongoDB");
+
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    } catch (err) {
+        console.error("MongoDB connection error:", err);
+    }
 }
 dbConnection();
-
-app.use("/api",loginRegisterRouter)
-
