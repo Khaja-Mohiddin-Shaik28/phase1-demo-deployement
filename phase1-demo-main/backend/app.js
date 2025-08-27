@@ -30,6 +30,17 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+// Serve React build
+if (process.env.NODE_ENV === "production") {
+    const frontendBuildPath = path.join(__dirname, "../frontend/dist");
+    app.use(express.static(frontendBuildPath));
+
+    // This handles React Router routes
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(frontendBuildPath, "index.html"));
+    });
+}
+
 
 // Routes
 app.use("/api", loginRegisterRouter);
