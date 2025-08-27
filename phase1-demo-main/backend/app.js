@@ -33,11 +33,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // ------------------- API Routes -------------------
-app.use("/api", loginRegisterRouter);
+app.use("/api", loginRegisterRouter); // ✅ Always relative path
 
 // ------------------- Serve React Build -------------------
 if (process.env.NODE_ENV === "production") {
-    const frontendBuildPath = path.join(__dirname, "../frontend/dist"); // Vite output folder
+    const frontendBuildPath = path.join(__dirname, "../frontend/dist"); // Vite build folder
     app.use(express.static(frontendBuildPath));
 
     // React Router fallback
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === "production") {
 // ------------------- Database Connection -------------------
 const dbConnection = async () => {
     try {
-        await mongoose.connect(process.env.dbURL); // No deprecated options needed
+        await mongoose.connect(process.env.dbURL); // No deprecated options
         console.log("✅ Connected to MongoDB");
 
         const PORT = process.env.PORT || 3000;
