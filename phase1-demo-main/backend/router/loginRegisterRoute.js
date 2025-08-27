@@ -19,9 +19,7 @@ router.post("/verify-otp", verifyOtp);
 router.post("/resend-otp", resendOtp);
 router.post("/reset-password", resetPassword);
 
-// Protected route
-// The original error was likely caused by a hidden character in the ':userId' part.
-// Manually re-typing the line below should resolve the issue.
+// Protected route - parameter is named "userId"
 router.get("/dashboard/:userId", verifyRouteMiddleware, (req, res) => {
     res.status(200).json({ status: true, user: req.user });
 });
