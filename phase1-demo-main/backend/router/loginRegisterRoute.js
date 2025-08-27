@@ -7,21 +7,54 @@ const {
     verifyOtp,
     resendOtp,
     resetPassword
-} = require("../controller/loginRegisterController");
+} = require("../controllers/loginRegisterController");
 const { verifyRouteMiddleware } = require("../middleware/verifyRouteMiddleware");
 
-// Public routes
-router.post("/register", register);
-router.post("/duplicateUserIdChecker", duplicateUserIdChecker);
-router.post("/login", login);
-router.post("/send-otp", sendOtp);
-router.post("/verify-otp", verifyOtp);
-router.post("/resend-otp", resendOtp);
-router.post("/reset-password", resetPassword);
+// Input validation middleware
+const validateInput = (req, res, next) => {
+    const { body } = req;
+    
+    // Remove any potential harmful characters
+    for (const key in body) {
+        if (typeof body[key] === 'string') {
+            body[key] = body[key].trim();
+        }
+    }
+    next();
+};
 
-// Protected route - parameter is named "userId"
+// ------------------- Public Routes -------------------
+router.post("/register", validateInput, register);
+router.post("/duplicateUserIdChecker", validateInput, duplicateUserIdChecker);
+router.post("/login", validateInput, login);
+router.post("/send-otp", validateInput, sendOtp);
+router.post("/verify-otp", validateInput, verifyOtp);
+router.post("/resend-otp", validateInput, resendOtp);
+router.post("/reset-password", validateInput, resetPassword);
+
+// ------------------- Protected Routes -------------------
 router.get("/dashboard/:userId", verifyRouteMiddleware, (req, res) => {
-    res.status(200).json({ status: true, user: req.user });
+    try {
+        res.status(200).json({ 
+            status: true, 
+            user: req.user,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            status: false, 
+            error: 'Failed to fetch dashboard data' 
+        });
+    }
+});
+
+// Test route for debugging
+router.get("/test", (req, res) => {
+    res.status(200).json({ 
+        message: "API is working", 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+    });
 });
 
 module.exports = router;
