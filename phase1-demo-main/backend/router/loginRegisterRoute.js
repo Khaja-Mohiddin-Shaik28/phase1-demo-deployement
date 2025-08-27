@@ -1,18 +1,27 @@
-const loginRegisterRouter = require("express").Router();
-const {register,duplicateUserIdChecker, login, sendOtp, verifyOtp, resendOtp, resetPassword} = require("../controller/loginRegisterController");
-const {verifyRouteMiddleware} = require("../middleware/verifyRouteMiddleware");
+const router = require("express").Router();
+const {
+    register,
+    duplicateUserIdChecker,
+    login,
+    sendOtp,
+    verifyOtp,
+    resendOtp,
+    resetPassword
+} = require("../controller/loginRegisterController");
+const { verifyRouteMiddleware } = require("../middleware/verifyRouteMiddleware");
 
-loginRegisterRouter.post("/register",register);
-loginRegisterRouter.post("/duplicateUserIdChecker",duplicateUserIdChecker);
-loginRegisterRouter.post("/login",login);
-loginRegisterRouter.post("/send-otp", sendOtp);
-loginRegisterRouter.post("/verify-otp", verifyOtp);
-loginRegisterRouter.post("/resend-otp", resendOtp);
-loginRegisterRouter.post("/reset-password", resetPassword);
+// Public routes
+router.post("/register", register);
+router.post("/duplicateUserIdChecker", duplicateUserIdChecker);
+router.post("/login", login);
+router.post("/send-otp", sendOtp);
+router.post("/verify-otp", verifyOtp);
+router.post("/resend-otp", resendOtp);
+router.post("/reset-password", resetPassword);
 
-// Protected Route
-loginRegisterRouter.get("/dashboard/:userId", verifyRouteMiddleware, (req, res)=>{
-    res.status(200).json({status : true, user : req.user});
-})
+// Protected route
+router.get("/dashboard/:userId", verifyRouteMiddleware, (req, res) => {
+    res.status(200).json({ status: true, user: req.user });
+});
 
-module.exports = loginRegisterRouter;
+module.exports = router;
