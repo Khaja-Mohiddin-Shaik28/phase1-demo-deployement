@@ -7,7 +7,7 @@ const {
     verifyOtp,
     resendOtp,
     resetPassword
-} = require("../controllers/loginRegisterController");
+} = require("../controller/loginRegisterController");
 const { verifyRouteMiddleware } = require("../middleware/verifyRouteMiddleware");
 
 // Input validation middleware
