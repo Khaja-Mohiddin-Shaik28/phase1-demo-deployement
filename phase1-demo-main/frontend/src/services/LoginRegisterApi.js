@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const LoginRegisterApi = createApi({
   reducerPath: "LoginRegisterApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api",
+    baseUrl: "https://phase1-demo-deployement.onrender.com/api",
     credentials: "include",
   }),
   endpoints: (builder) => ({
