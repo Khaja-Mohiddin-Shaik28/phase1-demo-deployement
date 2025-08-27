@@ -7,7 +7,7 @@ require('dotenv').config();
 const cookieParser = require("cookie-parser");
 
 // Router import
-const loginRegisterRouter = require("./routes/loginRegisterRoute");
+const loginRegisterRouter = require("./router/loginRegisterRoute");
 
 // ------------------- CORS Setup -------------------
 const allowedOrigins = [
